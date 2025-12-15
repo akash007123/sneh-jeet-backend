@@ -6,6 +6,7 @@ const connectDB = require('./config/database');
 const contactRoutes = require('./routes/contact');
 const eventRoutes = require('./routes/event');
 const galleryRoutes = require('./routes/gallery');
+const blogRoutes = require('./routes/blog');
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/contact', contactRoutes);
 app.use('/api/event', eventRoutes);
 app.use('/api/gallery', galleryRoutes);
+app.use('/api/blog', blogRoutes);
 
 // Default route
 app.get('/', (req, res) => {
