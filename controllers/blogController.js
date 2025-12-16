@@ -32,12 +32,14 @@ const createBlog = async (req, res) => {
     let processedSections = [];
     if (sections) {
       const sectionsArray = typeof sections === 'string' ? JSON.parse(sections) : sections;
-      processedSections = sectionsArray.map((section, index) => ({
-        ...section,
-        sectionImage: req.files?.sectionImages && req.files.sectionImages[index]
-          ? `/uploads/blogs/${req.files.sectionImages[index].filename}`
-          : section.sectionImage || null
-      }));
+      let fileIndex = 0;
+      processedSections = sectionsArray.map((section) => {
+        if (section.sectionImage === null && req.files?.sectionImages && req.files.sectionImages[fileIndex]) {
+          section.sectionImage = `/uploads/blogs/${req.files.sectionImages[fileIndex].filename}`;
+          fileIndex++;
+        }
+        return section;
+      });
     }
 
     // Create blog
@@ -160,12 +162,14 @@ const updateBlog = async (req, res) => {
     // Process sections with images
     if (updateData.sections) {
       const sectionsArray = typeof updateData.sections === 'string' ? JSON.parse(updateData.sections) : updateData.sections;
-      updateData.sections = sectionsArray.map((section, index) => ({
-        ...section,
-        sectionImage: req.files?.sectionImages && req.files.sectionImages[index]
-          ? `/uploads/blogs/${req.files.sectionImages[index].filename}`
-          : section.sectionImage || null
-      }));
+      let fileIndex = 0;
+      updateData.sections = sectionsArray.map((section) => {
+        if (section.sectionImage === null && req.files?.sectionImages && req.files.sectionImages[fileIndex]) {
+          section.sectionImage = `/uploads/blogs/${req.files.sectionImages[fileIndex].filename}`;
+          fileIndex++;
+        }
+        return section;
+      });
     }
 
     const blog = await Blog.findByIdAndUpdate(
