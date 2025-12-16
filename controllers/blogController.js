@@ -144,6 +144,26 @@ const updateBlog = async (req, res) => {
     const { id } = req.params;
     const updateData = { ...req.body };
 
+    // Basic validation
+    if (updateData.title !== undefined && !updateData.title) {
+      return res.status(400).json({ error: 'Title is required' });
+    }
+    if (updateData.excerpt !== undefined && !updateData.excerpt) {
+      return res.status(400).json({ error: 'Excerpt is required' });
+    }
+    if (updateData.content !== undefined && !updateData.content) {
+      return res.status(400).json({ error: 'Content is required' });
+    }
+    if (updateData.readTime !== undefined && !updateData.readTime) {
+      return res.status(400).json({ error: 'Read time is required' });
+    }
+    if (updateData.authorName !== undefined && !updateData.authorName) {
+      return res.status(400).json({ error: 'Author name is required' });
+    }
+    if (updateData.category !== undefined && !updateData.category) {
+      return res.status(400).json({ error: 'Category is required' });
+    }
+
     // Handle file uploads
     if (req.files?.featuredImage) {
       updateData.featuredImage = `/uploads/blogs/${req.files.featuredImage[0].filename}`;
@@ -163,13 +183,36 @@ const updateBlog = async (req, res) => {
     if (updateData.sections) {
       const sectionsArray = typeof updateData.sections === 'string' ? JSON.parse(updateData.sections) : updateData.sections;
       let fileIndex = 0;
-      updateData.sections = sectionsArray.map((section) => {
-        if (section.sectionImage === null && req.files?.sectionImages && req.files.sectionImages[fileIndex]) {
-          section.sectionImage = `/uploads/blogs/${req.files.sectionImages[fileIndex].filename}`;
-          fileIndex++;
-        }
-        return section;
-      });
+      updateData.sections = sectionsArray
+        .filter(section => section.sectionTitle && section.sectionContent) // Filter out invalid sections
+        .map((section) => {
+          if (section.sectionImage === null && req.files?.sectionImages && req.files.sectionImages[fileIndex]) {
+            section.sectionImage = `/uploads/blogs/${req.files.sectionImages[fileIndex].filename}`;
+            fileIndex++;
+          }
+          return section;
+        });
+    }
+
+    // Update slug if title changed
+    if (updateData.title) {
+      let baseSlug = updateData.title
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim()
+        .replace(/^-|-$/g, '');
+
+      let slug = baseSlug;
+      let counter = 1;
+
+      while (await Blog.findOne({ slug, _id: { $ne: id } })) {
+        slug = `${baseSlug}-${counter}`;
+        counter++;
+      }
+
+      updateData.slug = slug;
     }
 
     const blog = await Blog.findByIdAndUpdate(
