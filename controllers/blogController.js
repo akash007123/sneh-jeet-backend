@@ -167,6 +167,8 @@ const updateBlog = async (req, res) => {
     // Handle file uploads
     if (req.files?.featuredImage) {
       updateData.featuredImage = `/uploads/blogs/${req.files.featuredImage[0].filename}`;
+    } else if (req.body.removeFeaturedImage === 'true') {
+      updateData.featuredImage = null; // Remove featured image
     }
 
     // Handle tags array
@@ -189,6 +191,8 @@ const updateBlog = async (req, res) => {
           if (section.sectionImage === null && req.files?.sectionImages && req.files.sectionImages[fileIndex]) {
             section.sectionImage = `/uploads/blogs/${req.files.sectionImages[fileIndex].filename}`;
             fileIndex++;
+          } else if (section.sectionImage === '') {
+            section.sectionImage = null; // Remove image if empty string
           }
           return section;
         });
