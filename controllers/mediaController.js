@@ -12,14 +12,16 @@ const createMedia = async (req, res) => {
       featured,
       published,
       category,
-      videoUrl,
-      thumbnailUrl,
     } = req.body;
 
     // Basic validation
     if (!title || !description || !type || !duration || !creator) {
       return res.status(400).json({ error: 'All required fields must be filled' });
     }
+
+    // Handle file uploads
+    const videoUrl = req.files?.videoFile ? `/uploads/media/${req.files.videoFile[0].filename}` : null;
+    const thumbnailUrl = req.files?.thumbnailFile ? `/uploads/media/${req.files.thumbnailFile[0].filename}` : null;
 
     // Create media
     const media = new Media({
@@ -121,6 +123,14 @@ const updateMedia = async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = { ...req.body };
+
+    // Handle file uploads
+    if (req.files?.videoFile) {
+      updateData.videoUrl = `/uploads/media/${req.files.videoFile[0].filename}`;
+    }
+    if (req.files?.thumbnailFile) {
+      updateData.thumbnailUrl = `/uploads/media/${req.files.thumbnailFile[0].filename}`;
+    }
 
     // Handle boolean fields
     if (updateData.featured !== undefined) {
