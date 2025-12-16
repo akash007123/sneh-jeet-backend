@@ -11,6 +11,7 @@ const commentRoutes = require('./routes/comments');
 const authRoutes = require('./routes/auth');
 const mediaRoutes = require('./routes/media');
 const ideaRoutes = require('./routes/ideas');
+const membershipRoutes = require('./routes/membership');
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use('/api/comments', commentRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/media', mediaRoutes);
 app.use('/api/ideas', ideaRoutes);
+app.use('/api/membership', membershipRoutes);
 
 // Default route
 app.get('/', (req, res) => {
