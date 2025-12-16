@@ -13,6 +13,7 @@ const authRoutes = require('./routes/auth');
 const mediaRoutes = require('./routes/media');
 const ideaRoutes = require('./routes/ideas');
 const membershipRoutes = require('./routes/membership');
+const storyRoutes = require('./routes/story');
 
 const app = express();
 
@@ -50,13 +51,14 @@ app.use('/api/auth', authRoutes);
 app.use('/api/media', mediaRoutes);
 app.use('/api/ideas', ideaRoutes);
 app.use('/api/membership', membershipRoutes);
+app.use('/api/story', storyRoutes);
 
 // Default route
 app.get('/', (req, res) => {
   res.send('Sneh Jeet NGO Backend API');
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
