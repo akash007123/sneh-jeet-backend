@@ -9,6 +9,8 @@ const galleryRoutes = require('./routes/gallery');
 const blogRoutes = require('./routes/blog');
 const commentRoutes = require('./routes/comments');
 const authRoutes = require('./routes/auth');
+const mediaRoutes = require('./routes/media');
+const ideaRoutes = require('./routes/ideas');
 
 const app = express();
 
@@ -30,6 +32,8 @@ app.use('/api/gallery', galleryRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/media', mediaRoutes);
+app.use('/api/ideas', ideaRoutes);
 
 // Default route
 app.get('/', (req, res) => {
