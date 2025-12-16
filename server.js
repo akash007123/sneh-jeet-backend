@@ -8,6 +8,7 @@ const eventRoutes = require('./routes/event');
 const galleryRoutes = require('./routes/gallery');
 const blogRoutes = require('./routes/blog');
 const commentRoutes = require('./routes/comments');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use('/api/event', eventRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/comments', commentRoutes);
+app.use('/api/auth', authRoutes);
 
 // Default route
 app.get('/', (req, res) => {
