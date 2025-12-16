@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const connectDB = require('./config/database');
 const contactRoutes = require('./routes/contact');
 const eventRoutes = require('./routes/event');
@@ -17,6 +18,19 @@ const app = express();
 
 // Connect to database
 connectDB();
+
+// Ensure upload directories exist
+const uploadsDir = path.join(__dirname, 'uploads');
+const blogsDir = path.join(uploadsDir, 'blogs');
+const commentsDir = path.join(uploadsDir, 'comments');
+const galleryDir = path.join(uploadsDir, 'gallery');
+const mediaDir = path.join(uploadsDir, 'media');
+
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+if (!fs.existsSync(blogsDir)) fs.mkdirSync(blogsDir, { recursive: true });
+if (!fs.existsSync(commentsDir)) fs.mkdirSync(commentsDir, { recursive: true });
+if (!fs.existsSync(galleryDir)) fs.mkdirSync(galleryDir, { recursive: true });
+if (!fs.existsSync(mediaDir)) fs.mkdirSync(mediaDir, { recursive: true });
 
 // Middleware
 app.use(cors()); // Allow all origins
