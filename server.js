@@ -14,6 +14,7 @@ const mediaRoutes = require('./routes/media');
 const ideaRoutes = require('./routes/ideas');
 const membershipRoutes = require('./routes/membership');
 const storyRoutes = require('./routes/story');
+const subscriptionRoutes = require('./routes/subscription');
 
 const app = express();
 
@@ -52,6 +53,7 @@ app.use('/api/media', mediaRoutes);
 app.use('/api/ideas', ideaRoutes);
 app.use('/api/membership', membershipRoutes);
 app.use('/api/story', storyRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
 
 // Default route
 app.get('/', (req, res) => {
