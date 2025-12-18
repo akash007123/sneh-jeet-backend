@@ -15,6 +15,7 @@ const ideaRoutes = require('./routes/ideas');
 const membershipRoutes = require('./routes/membership');
 const storyRoutes = require('./routes/story');
 const subscriptionRoutes = require('./routes/subscription');
+const userRoutes = require('./routes/user');
 
 const app = express();
 
@@ -27,12 +28,16 @@ const blogsDir = path.join(uploadsDir, 'blogs');
 const commentsDir = path.join(uploadsDir, 'comments');
 const galleryDir = path.join(uploadsDir, 'gallery');
 const mediaDir = path.join(uploadsDir, 'media');
+const profileDir = path.join(uploadsDir, 'profile');
+const storiesDir = path.join(uploadsDir, 'stories');
 
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 if (!fs.existsSync(blogsDir)) fs.mkdirSync(blogsDir, { recursive: true });
 if (!fs.existsSync(commentsDir)) fs.mkdirSync(commentsDir, { recursive: true });
 if (!fs.existsSync(galleryDir)) fs.mkdirSync(galleryDir, { recursive: true });
 if (!fs.existsSync(mediaDir)) fs.mkdirSync(mediaDir, { recursive: true });
+if (!fs.existsSync(profileDir)) fs.mkdirSync(profileDir, { recursive: true });
+if (!fs.existsSync(storiesDir)) fs.mkdirSync(storiesDir, { recursive: true });
 
 // Middleware
 app.use(cors()); // Allow all origins
@@ -54,6 +59,7 @@ app.use('/api/ideas', ideaRoutes);
 app.use('/api/membership', membershipRoutes);
 app.use('/api/story', storyRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/users', userRoutes);
 
 // Default route
 app.get('/', (req, res) => {

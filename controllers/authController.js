@@ -15,8 +15,11 @@ const signup = async (req, res) => {
       return res.status(400).json({ error: 'User already exists' });
     }
 
+    // Handle profile picture upload
+    const profilePic = req.file ? `/uploads/profile/${req.file.filename}` : null;
+
     // Create user
-    const user = new User({ name, email, password, role });
+    const user = new User({ name, email, password, role, profilePic });
     await user.save();
 
     // Generate token
@@ -28,6 +31,7 @@ const signup = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        profilePic: user.profilePic,
       },
       token,
     });
@@ -61,6 +65,7 @@ const login = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        profilePic: user.profilePic,
       },
       token,
     });

@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema({
     enum: ['Admin', 'Manager', 'Vice-manager', 'HR', 'Volunteer', 'Member', 'User'],
     required: true,
   },
+  profilePic: {
+    type: String,
+    default: null,
+  },
 }, {
   timestamps: true,
 });
