@@ -1,12 +1,14 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const { auth, adminAuth } = require('../middleware/auth');
 const {
   createComment,
   getCommentsByBlog,
   getCommentCount,
   getAllComments,
   updateCommentStatus,
+  updateComment,
   deleteComment,
 } = require('../controllers/commentController');
 
@@ -47,8 +49,9 @@ router.get('/blog/:blogId', getCommentsByBlog);
 router.get('/blog/:blogId/count', getCommentCount);
 
 // Admin routes (these would typically be protected with authentication middleware)
-router.get('/', getAllComments);
-router.put('/:id/status', updateCommentStatus);
-router.delete('/:id', deleteComment);
+router.get('/', auth, adminAuth, getAllComments);
+router.put('/:id/status', auth, adminAuth, updateCommentStatus);
+router.put('/:id', auth, adminAuth, upload.single('profileImage'), updateComment);
+router.delete('/:id', auth, adminAuth, deleteComment);
 
 module.exports = router;

@@ -10,6 +10,7 @@ const {
   deleteBlog,
   getBlogCategories,
 } = require('../controllers/blogController');
+const { auth } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -43,7 +44,7 @@ const upload = multer({
 });
 
 // Routes
-router.post('/', upload.fields([
+router.post('/', auth, upload.fields([
   { name: 'featuredImage', maxCount: 1 },
   { name: 'sectionImages', maxCount: 10 }
 ]), createBlog);
@@ -51,10 +52,10 @@ router.get('/', getAllBlogs);
 router.get('/categories', getBlogCategories);
 router.get('/slug/:slug', getBlogBySlug);
 router.get('/:id', getBlogById);
-router.put('/:id', upload.fields([
+router.put('/:id', auth, upload.fields([
   { name: 'featuredImage', maxCount: 1 },
   { name: 'sectionImages', maxCount: 10 }
 ]), updateBlog);
-router.delete('/:id', deleteBlog);
+router.delete('/:id', auth, deleteBlog);
 
 module.exports = router;

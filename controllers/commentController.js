@@ -151,6 +151,40 @@ const updateCommentStatus = async (req, res) => {
   }
 };
 
+// Update comment
+const updateComment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, comment: commentText, profileImage } = req.body;
+
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    if (commentText) updateData.comment = commentText;
+    if (profileImage !== undefined) updateData.profileImage = profileImage;
+
+    // Handle profile image upload
+    if (req.file) {
+      updateData.profileImage = `/uploads/comments/${req.file.filename}`;
+    }
+
+    const comment = await Comment.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    if (!comment) {
+      return res.status(404).json({ error: 'Comment not found' });
+    }
+
+    res.status(200).json(comment);
+  } catch (error) {
+    console.error('Error updating comment:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 // Delete comment
 const deleteComment = async (req, res) => {
   try {
@@ -172,5 +206,6 @@ module.exports = {
   getCommentCount,
   getAllComments,
   updateCommentStatus,
+  updateComment,
   deleteComment,
 };
