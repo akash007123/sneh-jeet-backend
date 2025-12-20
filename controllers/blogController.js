@@ -34,6 +34,10 @@ const createBlog = async (req, res) => {
       const sectionsArray = typeof sections === 'string' ? JSON.parse(sections) : sections;
       let fileIndex = 0;
       processedSections = sectionsArray.map((section) => {
+        // Ensure sectionImage is string or null
+        if (typeof section.sectionImage !== 'string') {
+          section.sectionImage = null;
+        }
         if (section.sectionImage === null && req.files?.sectionImages && req.files.sectionImages[fileIndex]) {
           section.sectionImage = `/uploads/blogs/${req.files.sectionImages[fileIndex].filename}`;
           fileIndex++;
@@ -188,6 +192,10 @@ const updateBlog = async (req, res) => {
       updateData.sections = sectionsArray
         .filter(section => section.sectionTitle && section.sectionContent) // Filter out invalid sections
         .map((section) => {
+          // Ensure sectionImage is string or null
+          if (typeof section.sectionImage !== 'string') {
+            section.sectionImage = null;
+          }
           if (section.sectionImage === null && req.files?.sectionImages && req.files.sectionImages[fileIndex]) {
             section.sectionImage = `/uploads/blogs/${req.files.sectionImages[fileIndex].filename}`;
             fileIndex++;
