@@ -4,6 +4,7 @@ const { sendEmail } = require('../utils/email');
 const submitMembership = async (req, res) => {
   try {
     const { firstName, lastName, email, mobile, interest } = req.body;
+    const image = req.file ? `/uploads/membership/${req.file.filename}` : null;
 
     // Basic validation
     if (!firstName || !lastName || !email) {
@@ -17,6 +18,7 @@ const submitMembership = async (req, res) => {
       email,
       mobile,
       interest,
+      image,
     });
     await membership.save();
 

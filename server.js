@@ -30,6 +30,7 @@ const galleryDir = path.join(uploadsDir, 'gallery');
 const mediaDir = path.join(uploadsDir, 'media');
 const profileDir = path.join(uploadsDir, 'profile');
 const storiesDir = path.join(uploadsDir, 'stories');
+const membershipDir = path.join(uploadsDir, 'membership');
 
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 if (!fs.existsSync(blogsDir)) fs.mkdirSync(blogsDir, { recursive: true });
@@ -38,6 +39,7 @@ if (!fs.existsSync(galleryDir)) fs.mkdirSync(galleryDir, { recursive: true });
 if (!fs.existsSync(mediaDir)) fs.mkdirSync(mediaDir, { recursive: true });
 if (!fs.existsSync(profileDir)) fs.mkdirSync(profileDir, { recursive: true });
 if (!fs.existsSync(storiesDir)) fs.mkdirSync(storiesDir, { recursive: true });
+if (!fs.existsSync(membershipDir)) fs.mkdirSync(membershipDir, { recursive: true });
 
 // Middleware
 app.use(cors()); // Allow all origins

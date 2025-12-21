@@ -25,6 +25,10 @@ const membershipSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  image: {
+    type: String,
+    trim: true,
+  },
   status: {
     type: String,
     enum: ['New', 'Approved', 'Rejected'],
