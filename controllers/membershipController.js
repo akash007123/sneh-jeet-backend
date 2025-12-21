@@ -1,5 +1,7 @@
 const Membership = require('../models/Membership');
 const { sendEmail } = require('../utils/email');
+const path = require('path');
+const fs = require('fs');
 
 const submitMembership = async (req, res) => {
   try {
@@ -222,10 +224,119 @@ const deleteMembership = async (req, res) => {
   }
 };
 
+const createMembershipByAdmin = async (req, res) => {
+  try {
+    const {
+      firstName,
+      lastName,
+      email,
+      mobile,
+      alternateMobile,
+      address,
+      currentAddress,
+      idProofType,
+      education,
+      job,
+      gender,
+      dateOfBirth,
+      age,
+      nationality,
+      maritalStatus,
+      bloodGroup,
+      languagesKnown,
+      previousNgoExperience,
+      socialMediaProfiles,
+      interest,
+      position,
+      status,
+    } = req.body;
+
+    const image = req.files?.image ? `/uploads/membership/${req.files.image[0].filename}` : null;
+    const idProofFile = req.files?.idProofFile ? `/uploads/membership/${req.files.idProofFile[0].filename}` : null;
+
+    // Basic validation
+    if (!firstName || !lastName || !email) {
+      return res.status(400).json({ error: 'First name, last name, and email are required' });
+    }
+
+    // Parse nested objects
+    let parsedAddress = {};
+    if (address) {
+      try {
+        parsedAddress = typeof address === 'string' ? JSON.parse(address) : address;
+      } catch (e) {
+        return res.status(400).json({ error: 'Invalid address format' });
+      }
+    }
+
+    let parsedCurrentAddress = {};
+    if (currentAddress) {
+      try {
+        parsedCurrentAddress = typeof currentAddress === 'string' ? JSON.parse(currentAddress) : currentAddress;
+      } catch (e) {
+        return res.status(400).json({ error: 'Invalid current address format' });
+      }
+    }
+
+    let parsedPreviousNgoExperience = {};
+    if (previousNgoExperience) {
+      try {
+        parsedPreviousNgoExperience = typeof previousNgoExperience === 'string' ? JSON.parse(previousNgoExperience) : previousNgoExperience;
+      } catch (e) {
+        return res.status(400).json({ error: 'Invalid previous NGO experience format' });
+      }
+    }
+
+    let parsedSocialMediaProfiles = {};
+    if (socialMediaProfiles) {
+      try {
+        parsedSocialMediaProfiles = typeof socialMediaProfiles === 'string' ? JSON.parse(socialMediaProfiles) : socialMediaProfiles;
+      } catch (e) {
+        return res.status(400).json({ error: 'Invalid social media profiles format' });
+      }
+    }
+
+    // Save to database
+    const membership = new Membership({
+      firstName,
+      lastName,
+      email,
+      mobile,
+      alternateMobile,
+      address: parsedAddress,
+      currentAddress: parsedCurrentAddress,
+      idProofType,
+      idProofFile,
+      education,
+      job,
+      gender,
+      dateOfBirth,
+      age,
+      nationality,
+      maritalStatus,
+      bloodGroup,
+      languagesKnown: languagesKnown ? (typeof languagesKnown === 'string' ? JSON.parse(languagesKnown) : languagesKnown) : [],
+      previousNgoExperience: parsedPreviousNgoExperience,
+      socialMediaProfiles: parsedSocialMediaProfiles,
+      interest,
+      position,
+      image,
+      status: status || 'New',
+    });
+    await membership.save();
+
+    res.status(201).json({ message: 'Membership created successfully by admin', membership });
+  } catch (error) {
+    console.error('Error creating membership by admin:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 module.exports = {
   submitMembership,
   getAllMemberships,
   getMembershipById,
   updateMembership,
   deleteMembership,
+  createMembershipByAdmin,
 };
