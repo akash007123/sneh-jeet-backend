@@ -25,13 +25,17 @@ const membershipSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  position: {
+    type: String,
+    trim: true,
+  },
   image: {
     type: String,
     trim: true,
   },
   status: {
     type: String,
-    enum: ['New', 'Approved', 'Rejected'],
+    enum: ['New', 'Pending', 'Talk', 'Approved'],
     default: 'New',
   },
 }, {

@@ -192,10 +192,10 @@ const getMembershipById = async (req, res) => {
 const updateMembership = async (req, res) => {
   try {
     const { id } = req.params;
-    const { firstName, lastName, email, mobile, interest, status } = req.body;
+    const { firstName, lastName, email, mobile, interest, position, status } = req.body;
     const membership = await Membership.findByIdAndUpdate(
       id,
-      { firstName, lastName, email, mobile, interest, status },
+      { firstName, lastName, email, mobile, interest, position, status },
       { new: true, runValidators: true }
     );
     if (!membership) {
