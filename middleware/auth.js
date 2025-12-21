@@ -9,6 +9,9 @@ const auth = async (req, res, next) => {
     if (!user) {
       throw new Error();
     }
+    if (!user.isActive) {
+      return res.status(401).json({ error: 'Account is inactive' });
+    }
     req.user = user;
     next();
   } catch (error) {

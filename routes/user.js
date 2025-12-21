@@ -38,6 +38,7 @@ const upload = multer({
 router.get('/', auth, getAllUsers);
 router.get('/:id', auth, getUserById);
 router.put('/:id', auth, upload.single('profilePic'), updateUser);
+router.patch('/:id/status', auth, updateUser); // For status updates without file
 router.delete('/:id', auth, deleteUser);
 
 module.exports = router;

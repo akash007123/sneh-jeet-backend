@@ -32,6 +32,7 @@ const signup = async (req, res) => {
         email: user.email,
         role: user.role,
         profilePic: user.profilePic,
+        isActive: user.isActive,
       },
       token,
     });
@@ -56,6 +57,11 @@ const login = async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
+    // Check if user is active
+    if (!user.isActive) {
+      return res.status(401).json({ error: 'Account is inactive' });
+    }
+
     // Generate token
     const token = generateToken(user._id);
 
@@ -66,6 +72,7 @@ const login = async (req, res) => {
         email: user.email,
         role: user.role,
         profilePic: user.profilePic,
+        isActive: user.isActive,
       },
       token,
     });
