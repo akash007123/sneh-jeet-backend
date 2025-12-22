@@ -4,7 +4,12 @@ const bcrypt = require('bcryptjs');
 // Get all users
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}, '-password').sort({ createdAt: -1 });
+    const { status } = req.query;
+    let query = {};
+    if (status && status !== 'All') {
+      query.isActive = status === 'active';
+    }
+    const users = await User.find(query, '-password').sort({ createdAt: -1 });
     res.status(200).json(users);
   } catch (error) {
     console.error('Error fetching users:', error);

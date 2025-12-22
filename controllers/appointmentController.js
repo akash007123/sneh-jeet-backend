@@ -1,37 +1,36 @@
-const Contact = require('../models/Contact');
+const Appointment = require('../models/Appointment');
 const { sendEmail } = require('../utils/email');
 
-const submitContact = async (req, res) => {
+const submitAppointment = async (req, res) => {
   try {
-    const { name, email, phone, subject, message } = req.body;
+    const { name, mobile, email, message } = req.body;
 
     // Basic validation
-    if (!name || !email || !subject || !message) {
+    if (!name || !mobile || !email || !message) {
       return res.status(400).json({ error: 'All required fields must be filled' });
     }
 
     // Save to database
-    const contact = new Contact({
+    const appointment = new Appointment({
       name,
+      mobile,
       email,
-      phone,
-      subject,
       message,
     });
-    await contact.save();
+    await appointment.save();
 
     // Send confirmation email to user
-    const userSubject = 'Thank You for Reaching Out to Sneh Jeet NGO 🌈';
+    const userSubject = 'Appointment Request Received - Sneh Jeet NGO 🌈';
     const userText = `Dear ${name},
 
-Thank you for reaching out to Sneh Jeet NGO 🌈
+Thank you for booking an appointment with Sneh Jeet NGO 🌈
 
-We truly appreciate your courage and trust in connecting with us.
-Your message has been received, and one of our team members will respond shortly.
+We have received your appointment request and will contact you soon to confirm the details.
 
 Here are the details you shared:
 --------------------------------
-Subject: ${subject}
+Mobile: ${mobile}
+Email: ${email}
 Message:
 ${message}
 --------------------------------
@@ -54,19 +53,19 @@ Sneh Jeet NGO Team
     const userHtml = `<div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
   <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 8px; padding: 25px;">
     
-    <h2 style="color: #d63384; text-align: center;">Thank You for Reaching Out 🌈</h2>
+    <h2 style="color: #d63384; text-align: center;">Appointment Request Received 🌈</h2>
 
     <p>Dear <strong>${name}</strong>,</p>
 
     <p>
-      Thank you for contacting <strong>Sneh Jeet NGO</strong>.
-      We appreciate your trust and courage in connecting with us.
-      Your message has been received, and our team will respond soon.
+      Thank you for booking an appointment with <strong>Sneh Jeet NGO</strong>.
+      We have received your request and will contact you shortly to confirm.
     </p>
 
     <hr />
 
-    <p><strong>Subject:</strong> ${subject}</p>
+    <p><strong>Mobile:</strong> ${mobile}</p>
+    <p><strong>Email:</strong> ${email}</p>
     <p><strong>Your Message:</strong></p>
     <p style="background: #f1f1f1; padding: 10px; border-radius: 5px;">
       ${message}
@@ -103,29 +102,28 @@ Sneh Jeet NGO Team
     await sendEmail(email, userSubject, userText, userHtml);
 
     // Send notification email to admin
-    const adminSubject = '🌈 New Contact Form Submission – Sneh Jeet NGO';
-    const adminText = `A new contact form submission has been received.
+    const adminSubject = '🌈 New Appointment Booking – Sneh Jeet NGO';
+    const adminText = `A new appointment has been booked.
 
 Details:
 -----------------------------
 Name: ${name}
+Mobile: ${mobile}
 Email: ${email}
-Phone: ${phone || 'N/A'}
-Subject: ${subject}
 
 Message:
 ${message}
 -----------------------------
 
-Please review and respond as needed.
+Please review and confirm the appointment.
 
 Sneh Jeet NGO System`;
     const adminHtml = `<div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 20px;">
   <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 25px; border-radius: 8px;">
     
-    <h2 style="color: #0d6efd;">🌈 New Contact Form Submission</h2>
+    <h2 style="color: #0d6efd;">🌈 New Appointment Booking</h2>
 
-    <p>A new message has been submitted via the Sneh Jeet NGO website.</p>
+    <p>A new appointment has been booked via the Sneh Jeet NGO website.</p>
 
     <table style="width: 100%; border-collapse: collapse;">
       <tr>
@@ -133,16 +131,12 @@ Sneh Jeet NGO System`;
         <td>${name}</td>
       </tr>
       <tr>
+        <td><strong>Mobile:</strong></td>
+        <td>${mobile}</td>
+      </tr>
+      <tr>
         <td><strong>Email:</strong></td>
         <td>${email}</td>
-      </tr>
-      <tr>
-        <td><strong>Phone:</strong></td>
-        <td>${phone || 'N/A'}</td>
-      </tr>
-      <tr>
-        <td><strong>Subject:</strong></td>
-        <td>${subject}</td>
       </tr>
     </table>
 
@@ -154,86 +148,86 @@ Sneh Jeet NGO System`;
     <hr />
 
     <p style="color: #6c757d; font-size: 14px;">
-      This is an automated notification from the Sneh Jeet NGO contact system.
+      This is an automated notification from the Sneh Jeet NGO appointment system.
     </p>
   </div>
 </div>`;
 
     await sendEmail(process.env.ADMIN_EMAIL, adminSubject, adminText, adminHtml);
 
-    res.status(200).json({ message: 'Contact form submitted successfully' });
+    res.status(200).json({ message: 'Appointment booked successfully' });
   } catch (error) {
-    console.error('Error submitting contact form:', error);
+    console.error('Error booking appointment:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-const getAllContacts = async (req, res) => {
+const getAllAppointments = async (req, res) => {
   try {
     const { status } = req.query;
     let query = {};
     if (status && status !== 'All') {
       query.status = status;
     }
-    const contacts = await Contact.find(query).sort({ createdAt: -1 });
-    res.status(200).json(contacts);
+    const appointments = await Appointment.find(query).sort({ createdAt: -1 });
+    res.status(200).json(appointments);
   } catch (error) {
-    console.error('Error fetching contacts:', error);
+    console.error('Error fetching appointments:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-const getContactById = async (req, res) => {
+const getAppointmentById = async (req, res) => {
   try {
     const { id } = req.params;
-    const contact = await Contact.findById(id);
-    if (!contact) {
-      return res.status(404).json({ error: 'Contact not found' });
+    const appointment = await Appointment.findById(id);
+    if (!appointment) {
+      return res.status(404).json({ error: 'Appointment not found' });
     }
-    res.status(200).json(contact);
+    res.status(200).json(appointment);
   } catch (error) {
-    console.error('Error fetching contact:', error);
+    console.error('Error fetching appointment:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-const updateContact = async (req, res) => {
+const updateAppointment = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, phone, subject, message, status } = req.body;
-    const contact = await Contact.findByIdAndUpdate(
+    const { name, mobile, email, message, status } = req.body;
+    const appointment = await Appointment.findByIdAndUpdate(
       id,
-      { name, email, phone, subject, message, status },
+      { name, mobile, email, message, status },
       { new: true, runValidators: true }
     );
-    if (!contact) {
-      return res.status(404).json({ error: 'Contact not found' });
+    if (!appointment) {
+      return res.status(404).json({ error: 'Appointment not found' });
     }
-    res.status(200).json(contact);
+    res.status(200).json(appointment);
   } catch (error) {
-    console.error('Error updating contact:', error);
+    console.error('Error updating appointment:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-const deleteContact = async (req, res) => {
+const deleteAppointment = async (req, res) => {
   try {
     const { id } = req.params;
-    const contact = await Contact.findByIdAndDelete(id);
-    if (!contact) {
-      return res.status(404).json({ error: 'Contact not found' });
+    const appointment = await Appointment.findByIdAndDelete(id);
+    if (!appointment) {
+      return res.status(404).json({ error: 'Appointment not found' });
     }
-    res.status(200).json({ message: 'Contact deleted successfully' });
+    res.status(200).json({ message: 'Appointment deleted successfully' });
   } catch (error) {
-    console.error('Error deleting contact:', error);
+    console.error('Error deleting appointment:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
 module.exports = {
-  submitContact,
-  getAllContacts,
-  getContactById,
-  updateContact,
-  deleteContact,
+  submitAppointment,
+  getAllAppointments,
+  getAppointmentById,
+  updateAppointment,
+  deleteAppointment,
 };

@@ -169,7 +169,12 @@ Sneh Jeet NGO System`;
 
 const getAllMemberships = async (req, res) => {
   try {
-    const memberships = await Membership.find().sort({ createdAt: -1 });
+    const { status } = req.query;
+    let query = {};
+    if (status && status !== 'All') {
+      query.status = status;
+    }
+    const memberships = await Membership.find(query).sort({ createdAt: -1 });
     res.status(200).json(memberships);
   } catch (error) {
     console.error('Error fetching memberships:', error);

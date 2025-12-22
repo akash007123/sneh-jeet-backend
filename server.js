@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const connectDB = require('./config/database');
 const contactRoutes = require('./routes/contact');
+const appointmentRoutes = require('./routes/appointment');
 const eventRoutes = require('./routes/event');
 const galleryRoutes = require('./routes/gallery');
 const blogRoutes = require('./routes/blog');
@@ -51,6 +52,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/contact', contactRoutes);
+app.use('/api/appointments', appointmentRoutes);
 app.use('/api/event', eventRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/blog', blogRoutes);

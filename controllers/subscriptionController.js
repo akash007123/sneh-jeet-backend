@@ -27,7 +27,12 @@ exports.createSubscription = async (req, res) => {
 // Get all subscriptions
 exports.getSubscriptions = async (req, res) => {
   try {
-    const subscriptions = await Subscription.find().sort({ subscribedAt: -1 });
+    const { status } = req.query;
+    let query = {};
+    if (status && status !== 'All') {
+      query.status = status;
+    }
+    const subscriptions = await Subscription.find(query).sort({ subscribedAt: -1 });
     res.json(subscriptions);
   } catch (error) {
     console.error('Error fetching subscriptions:', error);
