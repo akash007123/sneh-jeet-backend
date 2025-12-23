@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const { getAllUsers, getUserById, updateUser, deleteUser } = require('../controllers/userController');
+const { getAllUsers, getUserById, updateUser, deleteUser, getVolunteers } = require('../controllers/userController');
 const { auth } = require('../middleware/auth');
 
 const router = express.Router();
@@ -36,6 +36,7 @@ const upload = multer({
 });
 
 router.get('/', auth, getAllUsers);
+router.get('/volunteers', getVolunteers); // Public route for volunteers
 router.get('/:id', auth, getUserById);
 router.put('/:id', auth, upload.single('profilePic'), updateUser);
 router.patch('/:id/status', auth, updateUser); // For status updates without file
