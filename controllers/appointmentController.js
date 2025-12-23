@@ -20,8 +20,9 @@ const submitAppointment = async (req, res) => {
     await appointment.save();
 
     // Send confirmation email to user
-    const userSubject = 'Appointment Request Received - Sneh Jeet NGO 🌈';
-    const userText = `Dear ${name},
+    try {
+      const userSubject = 'Appointment Request Received - Sneh Jeet NGO 🌈';
+      const userText = `Dear ${name},
 
 Thank you for booking an appointment with Sneh Jeet NGO 🌈
 
@@ -50,9 +51,9 @@ Phone: +91-9685533878
 With pride and solidarity,
 Sneh Jeet NGO Team
 🌈 Love • Equality • Inclusion`;
-    const userHtml = `<div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
+      const userHtml = `<div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
   <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 8px; padding: 25px;">
-    
+
     <h2 style="color: #d63384; text-align: center;">Appointment Request Received 🌈</h2>
 
     <p>Dear <strong>${name}</strong>,</p>
@@ -99,11 +100,16 @@ Sneh Jeet NGO Team
   </div>
 </div>`;
 
-    await sendEmail(email, userSubject, userText, userHtml);
+      await sendEmail(email, userSubject, userText, userHtml);
+    } catch (emailError) {
+      console.error('Error sending user email:', emailError);
+      // Continue without failing the request
+    }
 
     // Send notification email to admin
-    const adminSubject = '🌈 New Appointment Booking – Sneh Jeet NGO';
-    const adminText = `A new appointment has been booked.
+    try {
+      const adminSubject = '🌈 New Appointment Booking – Sneh Jeet NGO';
+      const adminText = `A new appointment has been booked.
 
 Details:
 -----------------------------
@@ -118,9 +124,9 @@ ${message}
 Please review and confirm the appointment.
 
 Sneh Jeet NGO System`;
-    const adminHtml = `<div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 20px;">
+      const adminHtml = `<div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 20px;">
   <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 25px; border-radius: 8px;">
-    
+
     <h2 style="color: #0d6efd;">🌈 New Appointment Booking</h2>
 
     <p>A new appointment has been booked via the Sneh Jeet NGO website.</p>
@@ -153,7 +159,11 @@ Sneh Jeet NGO System`;
   </div>
 </div>`;
 
-    await sendEmail(process.env.ADMIN_EMAIL, adminSubject, adminText, adminHtml);
+      await sendEmail(process.env.ADMIN_EMAIL, adminSubject, adminText, adminHtml);
+    } catch (emailError) {
+      console.error('Error sending admin email:', emailError);
+      // Continue without failing the request
+    }
 
     res.status(200).json({ message: 'Appointment booked successfully' });
   } catch (error) {
