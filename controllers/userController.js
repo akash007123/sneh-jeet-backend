@@ -20,7 +20,7 @@ const getAllUsers = async (req, res) => {
 // Get all volunteers (public)
 const getVolunteers = async (req, res) => {
   try {
-    const volunteers = await User.find({ role: 'Volunteer', isActive: true }, 'name email role profilePic').sort({ createdAt: -1 });
+    const volunteers = await User.find({ role: 'Volunteer', isActive: true }, 'name email role profilePic mobile').sort({ createdAt: -1 });
     res.status(200).json(volunteers);
   } catch (error) {
     console.error('Error fetching volunteers:', error);
