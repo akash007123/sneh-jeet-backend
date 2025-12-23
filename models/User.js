@@ -27,6 +27,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  mobile: {
+    type: String,
+    required: false,
+    trim: true,
+  },
   isActive: {
     type: Boolean,
     default: true,

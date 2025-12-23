@@ -85,6 +85,44 @@ const updateUser = async (req, res) => {
   }
 };
 
+// Create user (admin only)
+const createUser = async (req, res) => {
+  try {
+    const { name, email, password, role, mobile } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: 'User already exists' });
+    }
+
+    // Handle profile picture upload
+    const profilePic = req.file ? `/uploads/profile/${req.file.filename}` : null;
+
+    // Create user
+    const user = new User({ name, email, password, role, profilePic, mobile });
+    await user.save();
+
+    res.status(201).json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        profilePic: user.profilePic,
+        mobile: user.mobile,
+        isActive: user.isActive,
+      },
+    });
+  } catch (error) {
+    console.error('Error creating user:', error);
+    if (error.code === 11000) {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+    res.status(400).json({ error: error.message });
+  }
+};
+
 // Delete user
 const deleteUser = async (req, res) => {
   try {
@@ -103,6 +141,7 @@ const deleteUser = async (req, res) => {
 module.exports = {
   getAllUsers,
   getUserById,
+  createUser,
   updateUser,
   deleteUser,
   getVolunteers,

@@ -7,7 +7,7 @@ const generateToken = (id) => {
 
 const signup = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, mobile } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -19,7 +19,7 @@ const signup = async (req, res) => {
     const profilePic = req.file ? `/uploads/profile/${req.file.filename}` : null;
 
     // Create user
-    const user = new User({ name, email, password, role, profilePic });
+    const user = new User({ name, email, password, role, profilePic, mobile });
     await user.save();
 
     // Generate token
@@ -32,6 +32,7 @@ const signup = async (req, res) => {
         email: user.email,
         role: user.role,
         profilePic: user.profilePic,
+        mobile: user.mobile,
         isActive: user.isActive,
       },
       token,
@@ -72,6 +73,7 @@ const login = async (req, res) => {
         email: user.email,
         role: user.role,
         profilePic: user.profilePic,
+        mobile: user.mobile,
         isActive: user.isActive,
       },
       token,
