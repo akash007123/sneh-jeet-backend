@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const { signup, login } = require('../controllers/authController');
+const { signup, login, forgotPassword, resetPassword } = require('../controllers/authController');
 
 const router = express.Router();
 
@@ -36,5 +36,7 @@ const upload = multer({
 
 router.post('/signup', upload.single('profilePic'), signup);
 router.post('/login', login);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', resetPassword);
 
 module.exports = router;
