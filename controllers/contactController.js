@@ -33,9 +33,14 @@ const submitContact = async (req, res) => {
       createdAt: contact.createdAt
     });
 
-   // Send confirmation email to user
-    const userSubject = "Thank You for Reaching Out to Sneh Jeet NGO 🌈";
-    const userText = `Dear ${name},
+    // Respond immediately to avoid timeout
+    res.status(200).json({ message: "Contact form submitted successfully" });
+
+    // Send emails asynchronously to prevent blocking the response
+    try {
+      // Send confirmation email to user
+      const userSubject = "Thank You for Reaching Out to Sneh Jeet NGO 🌈";
+      const userText = `Dear ${name},
 
 Thank you for reaching out to Sneh Jeet NGO 🌈
 
@@ -64,9 +69,9 @@ Phone: +91-9685533878
 With pride and solidarity,
 Sneh Jeet NGO Team
 🌈 Love • Equality • Inclusion`;
-    const userHtml = `<div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
+      const userHtml = `<div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
   <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 8px; padding: 25px;">
-    
+
     <h2 style="color: #d63384; text-align: center;">Thank You for Reaching Out 🌈</h2>
 
     <p>Dear <strong>${name}</strong>,</p>
@@ -113,11 +118,11 @@ Sneh Jeet NGO Team
   </div>
 </div>`;
 
-    await sendEmail(email, userSubject, userText, userHtml);
+      await sendEmail(email, userSubject, userText, userHtml);
 
-    // Send notification email to admin
-    const adminSubject = "🌈 New Contact Form Submission – Sneh Jeet NGO";
-    const adminText = `A new contact form submission has been received.
+      // Send notification email to admin
+      const adminSubject = "🌈 New Contact Form Submission – Sneh Jeet NGO";
+      const adminText = `A new contact form submission has been received.
 
 Details:
 -----------------------------
@@ -133,9 +138,9 @@ ${message}
 Please review and respond as needed.
 
 Sneh Jeet NGO System`;
-    const adminHtml = `<div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 20px;">
+      const adminHtml = `<div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 20px;">
   <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 25px; border-radius: 8px;">
-    
+
     <h2 style="color: #0d6efd;">🌈 New Contact Form Submission</h2>
 
     <p>A new message has been submitted via the Sneh Jeet NGO website.</p>
@@ -172,14 +177,16 @@ Sneh Jeet NGO System`;
   </div>
 </div>`;
 
-    await sendEmail(
-      process.env.ADMIN_EMAIL,
-      adminSubject,
-      adminText,
-      adminHtml
-    );
-
-    res.status(200).json({ message: "Contact form submitted successfully" });
+      await sendEmail(
+        process.env.ADMIN_EMAIL,
+        adminSubject,
+        adminText,
+        adminHtml
+      );
+    } catch (emailError) {
+      console.error("Error sending emails:", emailError);
+      // Note: We don't send error response here since we already responded successfully
+    }
   } catch (error) {
     console.error("Error submitting contact form:", error);
     res.status(500).json({ error: "Internal server error" });
