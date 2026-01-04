@@ -1,5 +1,5 @@
-const Contact = require('../models/Contact');
-const { sendEmail } = require('../utils/email');
+const Contact = require("../models/Contact");
+const { sendEmail } = require("../utils/email");
 
 const submitContact = async (req, res) => {
   try {
@@ -7,7 +7,9 @@ const submitContact = async (req, res) => {
 
     // Basic validation
     if (!name || !email || !subject || !message) {
-      return res.status(400).json({ error: 'All required fields must be filled' });
+      return res
+        .status(400)
+        .json({ error: "All required fields must be filled" });
     }
 
     // Save to database
@@ -20,8 +22,19 @@ const submitContact = async (req, res) => {
     });
     await contact.save();
 
-    // Send confirmation email to user
-    const userSubject = 'Thank You for Reaching Out to Sneh Jeet NGO 🌈';
+    // Emit real-time notification to admin
+    const io = req.app.get('io');
+    io.emit('newContact', {
+      id: contact._id,
+      name,
+      email,
+      subject,
+      message,
+      createdAt: contact.createdAt
+    });
+
+   // Send confirmation email to user
+    const userSubject = "Thank You for Reaching Out to Sneh Jeet NGO 🌈";
     const userText = `Dear ${name},
 
 Thank you for reaching out to Sneh Jeet NGO 🌈
@@ -103,14 +116,14 @@ Sneh Jeet NGO Team
     await sendEmail(email, userSubject, userText, userHtml);
 
     // Send notification email to admin
-    const adminSubject = '🌈 New Contact Form Submission – Sneh Jeet NGO';
+    const adminSubject = "🌈 New Contact Form Submission – Sneh Jeet NGO";
     const adminText = `A new contact form submission has been received.
 
 Details:
 -----------------------------
 Name: ${name}
 Email: ${email}
-Phone: ${phone || 'N/A'}
+Phone: ${phone || "N/A"}
 Subject: ${subject}
 
 Message:
@@ -138,7 +151,7 @@ Sneh Jeet NGO System`;
       </tr>
       <tr>
         <td><strong>Phone:</strong></td>
-        <td>${phone || 'N/A'}</td>
+        <td>${phone || "N/A"}</td>
       </tr>
       <tr>
         <td><strong>Subject:</strong></td>
@@ -159,12 +172,17 @@ Sneh Jeet NGO System`;
   </div>
 </div>`;
 
-    await sendEmail(process.env.ADMIN_EMAIL, adminSubject, adminText, adminHtml);
+    await sendEmail(
+      process.env.ADMIN_EMAIL,
+      adminSubject,
+      adminText,
+      adminHtml
+    );
 
-    res.status(200).json({ message: 'Contact form submitted successfully' });
+    res.status(200).json({ message: "Contact form submitted successfully" });
   } catch (error) {
-    console.error('Error submitting contact form:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error submitting contact form:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -172,14 +190,14 @@ const getAllContacts = async (req, res) => {
   try {
     const { status } = req.query;
     let query = {};
-    if (status && status !== 'All') {
+    if (status && status !== "All") {
       query.status = status;
     }
     const contacts = await Contact.find(query).sort({ createdAt: -1 });
     res.status(200).json(contacts);
   } catch (error) {
-    console.error('Error fetching contacts:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error fetching contacts:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -188,12 +206,12 @@ const getContactById = async (req, res) => {
     const { id } = req.params;
     const contact = await Contact.findById(id);
     if (!contact) {
-      return res.status(404).json({ error: 'Contact not found' });
+      return res.status(404).json({ error: "Contact not found" });
     }
     res.status(200).json(contact);
   } catch (error) {
-    console.error('Error fetching contact:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error fetching contact:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -207,12 +225,12 @@ const updateContact = async (req, res) => {
       { new: true, runValidators: true }
     );
     if (!contact) {
-      return res.status(404).json({ error: 'Contact not found' });
+      return res.status(404).json({ error: "Contact not found" });
     }
     res.status(200).json(contact);
   } catch (error) {
-    console.error('Error updating contact:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error updating contact:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -221,12 +239,12 @@ const deleteContact = async (req, res) => {
     const { id } = req.params;
     const contact = await Contact.findByIdAndDelete(id);
     if (!contact) {
-      return res.status(404).json({ error: 'Contact not found' });
+      return res.status(404).json({ error: "Contact not found" });
     }
-    res.status(200).json({ message: 'Contact deleted successfully' });
+    res.status(200).json({ message: "Contact deleted successfully" });
   } catch (error) {
-    console.error('Error deleting contact:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error deleting contact:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 

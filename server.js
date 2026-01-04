@@ -3,6 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const http = require('http');
+const socketIo = require('socket.io');
 const connectDB = require('./config/database');
 const contactRoutes = require('./routes/contact');
 const appointmentRoutes = require('./routes/appointment');
@@ -19,6 +21,13 @@ const subscriptionRoutes = require('./routes/subscription');
 const userRoutes = require('./routes/user');
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: "*", // Allow all origins for now, adjust as needed
+    methods: ["GET", "POST"]
+  }
+});
 
 // Connect to database
 connectDB();
@@ -65,12 +74,24 @@ app.use('/api/story', storyRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/users', userRoutes);
 
+// Socket.IO connection
+io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+});
+
+// Make io accessible from routes/controllers
+app.set('io', io);
+
 // Default route
 app.get('/', (req, res) => {
   res.send('Sneh Jeet NGO Backend API');
 });
 
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
