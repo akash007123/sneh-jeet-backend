@@ -76,6 +76,12 @@ tmp/
 temp/
 
 # =========================
+# Uploaded user content (never commit runtime uploads)
+# =========================
+uploads/
+!uploads/.gitkeep
+
+# =========================
 # Optional: Database dumps
 # =========================
 *.sqlite
